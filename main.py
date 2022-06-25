@@ -13,7 +13,7 @@ class Amazon:
         self.set_url(search)
         self.data = self.access_data()
         self.price_sorted_data = self.sort_by_price()
-        self.ratting_sorted_data = self.sort_by_ratting()
+        self.rating_sorted_data = self.sort_by_rating()
 
     def set_url(self, url):
         self.hostname = 'https://www.amazon.ca'
@@ -52,14 +52,14 @@ class Amazon:
 
         return data
 
-    def item2csv(self, name='Test', price=False, ratting=False):
+    def item2csv(self, name='Test', price=False, rating=False):
         filename = f"{name}.csv"
         file_exist = path.exists(filename)
         data = self.data
         if price:
             data = self.price_sorted_data
-        elif ratting:
-            data = self.ratting_sorted_data
+        elif rating:
+            data = self.rating_sorted_data
 
         with open(filename, 'a') as f:
             if not file_exist:
@@ -86,17 +86,31 @@ class Amazon:
     def sort_by_price(self):
         data = self.data
         def k(a): return int(a[1])
-        res = sorted(data, key=k)
+        res = sorted(data, key=k, reverse=True)
+        def b(a): return str(a[1])
+        res = map(b, res)
         return res
 
-    def sort_by_ratting(self):
+    def sort_by_rating(self):
         data = self.access_data()
-        res = sorted(data, key=lambda a: float(a[2]))
+        for index, item in enumerate(data):
+            try:
+                data[index][2] = float(item[2])
+            except(ValueError):
+                data[index][2] = 0
+
+        def k(a): return float(a[2])
+        res = sorted(data, key=k, reverse=True)
+        def b(a): return [a[0], a[1], str(a[2])]
+        res = map(b, res)
+        def g(a): return [a[0], a[1], 'N/E'] if a[2] == '0' else a
+        res = map(g, res)
         return res
+
 
 if __name__ == "__main__":
-    #exemple pour l'obtention de 2 pages de donné de macbook pro trié en ordre croissant de prix
-    a = Amazon("macbook pro")
-    a.many_pages(2)
-    #price =True pour un tri des ellement en ordre croissant selon le prix, Ratting=True aussi possible
-    a.item2csv("macbook_sorted", price=True)
+    # exemple
+    a = Amazon("macbook pro")  # nom de l'item qu'on recherche
+    a.many_pages(2)  # deux pages de data
+    # création du fichier csv nommé 'macbook_sorted' trié en fonction du rating
+    a.item2csv("macbook_sorted", rating=True)
