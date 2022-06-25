@@ -1,9 +1,8 @@
 #!/opt/homebrew/bin/python3.9
-from urllib.request import urlopen, HTTPHandler
+from urllib.request import urlopen
 from urllib.request import Request
 from bs4 import BeautifulSoup as soup
 from os import path
-import csv
 user_agent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 12_4) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.4 Safari/605.1.15'
 
 
@@ -95,7 +94,9 @@ class Amazon:
         res = sorted(data, key=lambda a: float(a[2]))
         return res
 
-
-a = Amazon("macbook pro")
-a.many_pages(2)
-a.item2csv("macbook_sorted", price=True)
+if __name__ == "__main__":
+    #exemple pour l'obtention de 2 pages de donné de macbook pro trié en ordre croissant de prix
+    a = Amazon("macbook pro")
+    a.many_pages(2)
+    #price =True pour un tri des ellement en ordre croissant selon le prix, Ratting=True aussi possible
+    a.item2csv("macbook_sorted", price=True)
