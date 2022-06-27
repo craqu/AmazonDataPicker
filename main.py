@@ -1,19 +1,16 @@
-#!/opt/homebrew/bin/python3.9
+﻿#!/opt/homebrew/bin/python3.9
 from urllib.request import urlopen
 from urllib.request import Request
 from bs4 import BeautifulSoup as soup
 from os import path
-from time import sleep
 user_agent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 12_4) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.4 Safari/605.1.15'
 
 
 class Amazon:
     def __init__(self, stdin):
         search = 'https://www.amazon.ca' + f'/s?k={stdin.replace(" ", "+")}'
-        print(search)
         self.set_url(search)
         self.data = self.access_data()
-        print(self.data)
         self.price_sorted_data = self.sort_by_price()
         self.rating_sorted_data = self.sort_by_rating()
 
@@ -88,9 +85,8 @@ class Amazon:
         data = self.data
         def k(a): return int(a[1])
         res = sorted(data, key=k, reverse=True)
-        def b(a): return [a[0],str(a[1]),a[2]]
+        def b(a): return [a[0], str(a[1]), a[2]]
         res = list(map(b, res))
-        print(res)
         return res
 
     def sort_by_rating(self):
@@ -103,7 +99,7 @@ class Amazon:
 
         def k(a): return float(a[2])
         res = sorted(data, key=k, reverse=True)
-        def b(a): return [a[0], a[1], str(a[2])]
+        b = lambda a : [a[0], a[1], str(a[2])]
         res = map(b, res)
         def g(a): return [a[0], a[1], 'N/E'] if a[2] == '0' else a
         res = map(g, res)
@@ -112,8 +108,7 @@ class Amazon:
 
 if __name__ == "__main__":
     # exemple
-    a = Amazon("macbook pro")  # nom de l'item qu'on recherche
-    #a.many_pages(1)  # deux pages de data
+    a = Amazon("crayon a mine")  # nom de l'item qu'on recherche
+    a.many_pages(1)  # deux pages de data
     # création du fichier csv nommé 'macbook_sorted' trié en fonction du rating
-    sleep(1)
-    a.item2csv("macbook", price=True)
+    a.item2csv("crayon a mine", rating=True)
