@@ -3,6 +3,7 @@ from urllib.request import urlopen
 from urllib.request import Request
 from bs4 import BeautifulSoup as soup
 from os import path
+from time import sleep
 user_agent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 12_4) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.4 Safari/605.1.15'
 
 
@@ -12,6 +13,7 @@ class Amazon:
         print(search)
         self.set_url(search)
         self.data = self.access_data()
+        print(self.data)
         self.price_sorted_data = self.sort_by_price()
         self.rating_sorted_data = self.sort_by_rating()
 
@@ -38,9 +40,8 @@ class Amazon:
             name = container.find(
                 'span', {'class', 'a-size-base-plus a-color-base a-text-normal'})
             price = price_int.contents[0] if price_int else 0
-            name = name.contents[0].replace(',', '|').split(
-                '|')[0].split('—')[0].split('-')[0]
-            if len(name.split(' ')) > 12:
+            name = name.contents[0].replace(',', '|')
+            if len(name.split(' ')) > 14:
                 name = ' '.join(name.split(" ")[:11])
             try:
                 rating = container.find('i').contents[0].contents[0].split()[
@@ -87,8 +88,9 @@ class Amazon:
         data = self.data
         def k(a): return int(a[1])
         res = sorted(data, key=k, reverse=True)
-        def b(a): return str(a[1])
-        res = map(b, res)
+        def b(a): return [a[0],str(a[1]),a[2]]
+        res = list(map(b, res))
+        print(res)
         return res
 
     def sort_by_rating(self):
@@ -111,6 +113,7 @@ class Amazon:
 if __name__ == "__main__":
     # exemple
     a = Amazon("macbook pro")  # nom de l'item qu'on recherche
-    a.many_pages(2)  # deux pages de data
+    #a.many_pages(1)  # deux pages de data
     # création du fichier csv nommé 'macbook_sorted' trié en fonction du rating
-    a.item2csv("macbook_sorted", rating=True)
+    sleep(1)
+    a.item2csv("macbook", price=True)
